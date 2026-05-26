@@ -1,0 +1,33 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, Segoe UI, system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #02050b; color: #dce7fb; }
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+header, footer { padding: .8rem 1rem; background: linear-gradient(180deg, #0f1623, #0a101a); border-bottom: 1px solid #1d283a; }
+header h1 { margin: 0; font-size: 1.2rem; letter-spacing: .02em; }
+header p { margin: .3rem 0 0; color: #96abcf; font-size: .92rem; }
+footer { border-top: 1px solid #1d283a; border-bottom: none; display: flex; gap: 1rem; flex-wrap: wrap; }
+main { display: grid; grid-template-columns: 280px 1fr 340px; gap: .8rem; padding: .8rem; flex: 1; min-height: 0; }
+.panel { background: radial-gradient(circle at top, #101827, #0b111b); border: 1px solid #22324a; border-radius: 10px; padding: .8rem; overflow: auto; }
+.panel h2 { margin-top: 0; }
+.panel h3 { margin-bottom: .4rem; margin-top: .85rem; color: #bcd3f8; }
+.viewer { border: 1px solid #22324a; border-radius: 10px; overflow: hidden; min-height: 560px; background: #060a12; }
+button { width: 100%; margin: .25rem 0; padding: .52rem; background: #182843; color: #d1e5ff; border: 1px solid #335485; border-radius: 7px; text-transform: capitalize; cursor: pointer; transition: .15s ease; }
+button:hover { background: #1e3559; }
+button.active { background: #24527a; border-color: #73d4ff; color: #e4f7ff; }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+.label { background: rgba(8, 13, 25, 0.88); border: 1px solid #395882; padding: .16rem .38rem; border-radius: 4px; font-size: .65rem; white-space: nowrap; color: #d1e8ff; }
+.label.active { color: #85f5ff; border-color: #85f5ff; }
+ul { padding-left: 1.1rem; margin: .45rem 0; }
+.meta { font-size: .88rem; color: #a9bddb; }
+@media (max-width: 1100px) {
+  main { grid-template-columns: 1fr; }
+  .viewer { min-height: 460px; }
+  .modes { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 620px) {
+  .modes { grid-template-columns: 1fr 1fr; }
+  .viewer { min-height: 380px; }
+}
