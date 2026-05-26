@@ -792,7 +792,7 @@ function Mechanism({ item, side, explode, selected, setSelected, modeKey, labels
     <group position={displayPosition.toArray()} onClick={(event) => { event.stopPropagation(); setSelected(item.name) }}>
       <MechanismShape item={item} active={active} modeKey={modeKey} />
       {labels && item.type !== 'case' && (
-        <Html distanceFactor={7.4} position={[0, 0.18, 0.12]} center>
+        <Html distanceFactor={7.8} position={[0, 0.2 + item.layer * 0.01, 0.14]} center>
           <button className={`part-label ${selected === item.name ? 'selected' : ''} ${active ? 'hot' : ''}`} onClick={() => setSelected(item.name)}>{item.name}</button>
         </Html>
       )}
@@ -885,10 +885,11 @@ function Scene({ side, explode, selected, setSelected, modeKey, labels, resetTok
     <>
       <color attach="background" args={['#03060d']} />
       <fog attach="fog" args={['#03060d', 4, 9]} />
-      <ambientLight intensity={0.62} />
-      <directionalLight position={[3.5, 4, 3]} intensity={1.35} />
-      <directionalLight position={[-3, -2, -2]} intensity={0.45} />
-      <pointLight position={[0, -2, 2]} intensity={0.5} color="#6cecff" />
+      <ambientLight intensity={0.45} />
+      <hemisphereLight color="#98ceff" groundColor="#0b111c" intensity={0.5} />
+      <directionalLight position={[3.8, 4.5, 3.6]} intensity={1.55} color="#ffe1b2" />
+      <directionalLight position={[-2.8, 1.5, -3.2]} intensity={0.55} color="#8dc2ff" />
+      <spotLight position={[0, 3.8, 1.2]} intensity={0.75} angle={0.4} penumbra={0.6} color="#8cf7ff" />
       <WatchModel side={side} explode={explode} selected={selected} setSelected={setSelected} modeKey={modeKey} labels={labels} />
       <OrbitControls ref={orbitRef} enablePan={false} minDistance={2.2} maxDistance={6.5} />
     </>
@@ -990,12 +991,13 @@ function App() {
         </aside>
 
         <section className="viewer-card">
-          <div className="viewer-status">
+          <div className={`viewer-status mode-${modeKey}`}>
             <span>{mode.name}</span>
             <span>{explode ? 'Exploded architecture' : 'Assembled architecture'}</span>
             <span>{labels ? 'Labels on' : 'Labels off'}</span>
+            <span>{mode.active.slice(0, 2).join(' • ') || 'Going train at rest'}</span>
           </div>
-          <Canvas camera={{ position: [2.9, 2.0, 3.3], fov: 42 }} onPointerMissed={() => setSelected('Reversible case')}>
+          <Canvas camera={{ position: [2.5, 1.75, 3.9], fov: 38 }} onPointerMissed={() => setSelected('Reversible case')}>
             <Scene side={side} explode={explode} selected={selected} setSelected={setSelected} modeKey={modeKey} labels={labels} resetToken={resetToken} />
           </Canvas>
         </section>
@@ -1012,6 +1014,7 @@ function App() {
             <span>Active mode</span>
             <h3>{mode.name}</h3>
             <p>{mode.description}</p>
+            <p><strong>Energy route:</strong> {mode.active.join(' → ') || 'Going train only'}</p>
           </div>
 
           <h3>Public specification notes</h3>
