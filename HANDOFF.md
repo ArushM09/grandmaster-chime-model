@@ -1,30 +1,35 @@
 # Handoff
 
 Current status:
-Milestone 1 is complete. The from-zero branch now has a Vite React app with the required Three.js, React Three Fiber, Drei, and Playwright dependencies installed. The starter Vite screen has been replaced with a project-specific museum style shell and public-spec anchor cards.
+Milestone 2 is complete. The project has a Blender Python generator for an original educational Grandmaster Chime model, plus a temporary Node fallback exporter because Blender is not installed on this machine. The fallback exporter generated public/models/grandmaster_chime.glb and public/models/grandmaster_chime_manifest.json with all required named mechanism groups.
 
 Files changed:
-1. Added package.json and package-lock.json.
-2. Added index.html, vite.config.js, eslint.config.js, and .gitignore.
-3. Added src/main.jsx, src/App.jsx, and src/styles.css.
-4. Added public/favicon.svg.
-5. Kept README.md, AGENTS.md, PROJECT_SPEC.md, and FULL_REBUILD_PLAN.md intact.
+1. Added scripts/blender/generate_grandmaster_chime.py.
+2. Added scripts/blender/README.md with Blender install and run instructions.
+3. Added scripts/create_fallback_model.js.
+4. Added public/models/grandmaster_chime.glb.
+5. Added public/models/grandmaster_chime_manifest.json.
+6. Updated package.json with generate:blender-model and generate:fallback-model scripts.
+7. Updated eslint.config.js so src uses browser globals and scripts use Node globals.
 
 What works:
-1. npm install completes with no vulnerabilities reported.
-2. npm run build passes.
-3. The app renders a project-specific landing shell and explicitly states that the model is not exact CAD.
+1. python -m py_compile scripts/blender/generate_grandmaster_chime.py passes.
+2. npm run generate:fallback-model writes the temporary GLB and manifest.
+3. npm run lint passes.
+4. npm run build passes.
+5. The manifest includes public facts, the non-CAD accuracy boundary, and all required named mechanism groups.
 
 What is broken:
-1. No Blender asset generator exists yet.
-2. No GLB model exists yet.
-3. The 3D viewer, mechanism selection, animation modes, and Playwright screenshots are not implemented yet.
+1. Blender is not available through PATH, so the Blender-generated GLB has not been produced on this machine.
+2. The app still renders the milestone 1 shell and does not load the GLB yet.
+3. Viewer interactions, animations, educational panels, and Playwright screenshots are still pending.
 
 Next exact task:
-Create scripts/blender/generate_grandmaster_chime.py, generate public/models/grandmaster_chime.glb if Blender is available, and create a fallback model path if Blender is unavailable.
+Implement the React Three Fiber viewer that loads public/models/grandmaster_chime.glb with useGLTF, shows loading and error states, supports OrbitControls, and allows named mechanism selection with highlighting.
 
 How to resume:
 1. git checkout from-zero-full-rebuild
 2. npm install
-3. npm run build
-4. Continue with Milestone 2: Blender asset generation and model manifest.
+3. npm run generate:fallback-model
+4. npm run build
+5. Continue with Milestone 3: GLB viewer loading, selection, highlighting, orbit controls, and loading/error states.

@@ -1,0 +1,154 @@
+{
+  "asset": "grandmaster_chime.glb",
+  "assetType": "temporary_node_fallback",
+  "blenderAvailableWhenGenerated": false,
+  "accuracyBoundary": "Original educational fallback geometry. Not exact CAD.",
+  "publicFacts": {
+    "model": "Patek Philippe Grandmaster Chime 6300GR",
+    "complications": "20 complications",
+    "acousticFunctions": [
+      "grande sonnerie",
+      "petite sonnerie",
+      "minute repeater",
+      "alarm with time strike",
+      "date repeater"
+    ],
+    "movement": "Caliber GS AL 36 750 QIS FUS IRM",
+    "parts": 1366,
+    "jewels": 108,
+    "movementDiameterMm": 37,
+    "movementThicknessMm": 10.7,
+    "frequency": "25,200 semi-oscillations per hour, equal to 3.5 Hz",
+    "caseDiameterMm": 47.7,
+    "caseThicknessMm": 16.07,
+    "waterResistance": "Humidity and dust protected only, not water resistant",
+    "gongs": "Three classic gongs"
+  },
+  "groups": [
+    {
+      "id": "Reversible_Double_Sided_Case",
+      "label": "Reversible double sided case",
+      "category": "case"
+    },
+    {
+      "id": "Two_Tone_Case_Feel",
+      "label": "Two tone case feel",
+      "category": "case"
+    },
+    {
+      "id": "Front_Time_Dial",
+      "label": "Front time dial",
+      "category": "dial"
+    },
+    {
+      "id": "Calendar_Side_Dial",
+      "label": "Calendar side dial",
+      "category": "dial"
+    },
+    {
+      "id": "Sapphire_Crystals",
+      "label": "Sapphire crystals",
+      "category": "case"
+    },
+    {
+      "id": "Crown_And_Controls",
+      "label": "Crown and controls",
+      "category": "case"
+    },
+    {
+      "id": "Mainplate",
+      "label": "Mainplate",
+      "category": "movement"
+    },
+    {
+      "id": "Bridges_With_Bevels",
+      "label": "Bridges with bevels",
+      "category": "movement"
+    },
+    {
+      "id": "Ruby_Jewels",
+      "label": "Ruby jewels",
+      "category": "movement"
+    },
+    {
+      "id": "Screws",
+      "label": "Screws",
+      "category": "movement"
+    },
+    {
+      "id": "Going_Barrels",
+      "label": "Going barrels",
+      "category": "power"
+    },
+    {
+      "id": "Sonnerie_Barrels",
+      "label": "Sonnerie barrels",
+      "category": "power"
+    },
+    {
+      "id": "Gear_Trains_With_Teeth",
+      "label": "Gear trains with teeth",
+      "category": "timekeeping"
+    },
+    {
+      "id": "Balance_And_Escapement_Abstraction",
+      "label": "Balance and escapement abstraction",
+      "category": "timekeeping"
+    },
+    {
+      "id": "Strike_Train",
+      "label": "Strike train",
+      "category": "acoustic"
+    },
+    {
+      "id": "Governor",
+      "label": "Governor",
+      "category": "acoustic"
+    },
+    {
+      "id": "Three_Gongs",
+      "label": "Three gongs",
+      "category": "acoustic"
+    },
+    {
+      "id": "Three_Hammers",
+      "label": "Three hammers",
+      "category": "acoustic"
+    },
+    {
+      "id": "Repeater_Racks_And_Snails",
+      "label": "Repeater racks and snails",
+      "category": "acoustic"
+    },
+    {
+      "id": "Date_Repeater_Racks",
+      "label": "Date repeater racks",
+      "category": "calendar acoustic"
+    },
+    {
+      "id": "Alarm_Cam_And_Release_Path",
+      "label": "Alarm cam and release path",
+      "category": "alarm"
+    },
+    {
+      "id": "Perpetual_Calendar_Wheels",
+      "label": "Perpetual calendar wheels",
+      "category": "calendar"
+    },
+    {
+      "id": "Moon_Phase",
+      "label": "Moon phase",
+      "category": "calendar"
+    },
+    {
+      "id": "Isolator_Levers",
+      "label": "Isolator levers",
+      "category": "control"
+    },
+    {
+      "id": "Power_Reserve_Differential",
+      "label": "Power reserve differential",
+      "category": "power"
+    }
+  ]
+}
