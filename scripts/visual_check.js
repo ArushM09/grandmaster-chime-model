@@ -1,9 +1,8 @@
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
+import { PNG } from 'pngjs'
 import { chromium } from 'playwright'
-
-/* global document */
 
 const BASE_URL = process.env.VISUAL_CHECK_URL || 'http://127.0.0.1:5173'
 const SCREENSHOT_DIR = path.resolve('validation/screenshots')
@@ -18,17 +17,17 @@ async function isReachable(url) {
 }
 
 function startDevServer() {
-  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-  const child = spawn(
-    npmCmd,
-    ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort'],
-    {
-      cwd: process.cwd(),
-      env: process.env,
-      stdio: ['ignore', 'pipe', 'pipe'],
-      windowsHide: true,
-    },
-  )
+  const command = process.platform === 'win32' ? 'cmd.exe' : 'npm'
+  const args =
+    process.platform === 'win32'
+      ? ['/d', '/s', '/c', 'npm run dev -- --host 127.0.0.1 --port 5173 --strictPort']
+      : ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort']
+  const child = spawn(command, args, {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+  })
   child.stdout.on('data', (chunk) => process.stdout.write(chunk))
   child.stderr.on('data', (chunk) => process.stderr.write(chunk))
   return child
@@ -45,36 +44,50 @@ async function waitForServer(url, timeoutMs = 30000) {
   throw new Error(`Timed out waiting for ${url}`)
 }
 
-async function canvasStats(page) {
-  return page.evaluate(() => {
-    const canvas = document.querySelector('canvas')
-    const gl = canvas?.getContext('webgl2') || canvas?.getContext('webgl')
-    if (!canvas || !gl) {
-      return { hasCanvas: false }
-    }
+async function screenshotCanvasStats(page, target) {
+  const box = await page.locator('canvas').boundingBox()
+  if (!box) {
+    return { hasCanvas: false }
+  }
 
-    const width = Math.min(canvas.width, 360)
-    const height = Math.min(canvas.height, 260)
-    const x = Math.max(0, Math.floor((canvas.width - width) / 2))
-    const y = Math.max(0, Math.floor((canvas.height - height) / 2))
-    const pixels = new Uint8Array(width * height * 4)
-    gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+  const bytes = await page.screenshot({ path: target, fullPage: false })
+  const png = PNG.sync.read(bytes)
+  const width = Math.min(Math.floor(box.width), 360)
+  const height = Math.min(Math.floor(box.height), 260)
+  const startX = Math.max(0, Math.floor(box.x + (box.width - width) / 2))
+  const startY = Math.max(0, Math.floor(box.y + (box.height - height) / 2))
+  let brightPixels = 0
+  let nonWhitePixels = 0
+  let variedPixels = 0
 
-    let brightPixels = 0
-    for (let index = 0; index < pixels.length; index += 4) {
-      if (pixels[index] + pixels[index + 1] + pixels[index + 2] > 55) {
+  for (let y = startY; y < Math.min(png.height, startY + height); y += 1) {
+    for (let x = startX; x < Math.min(png.width, startX + width); x += 1) {
+      const index = (png.width * y + x) * 4
+      const red = png.data[index]
+      const green = png.data[index + 1]
+      const blue = png.data[index + 2]
+      const sum = red + green + blue
+      if (sum > 55) {
         brightPixels += 1
       }
+      if (sum < 735) {
+        nonWhitePixels += 1
+      }
+      if (Math.max(red, green, blue) - Math.min(red, green, blue) > 8) {
+        variedPixels += 1
+      }
     }
+  }
 
-    return {
-      hasCanvas: true,
-      brightPixels,
-      sampledPixels: width * height,
-      clientWidth: canvas.clientWidth,
-      clientHeight: canvas.clientHeight,
-    }
-  })
+  return {
+    hasCanvas: true,
+    brightPixels,
+    nonWhitePixels,
+    variedPixels,
+    sampledPixels: width * height,
+    clientWidth: Math.round(box.width),
+    clientHeight: Math.round(box.height),
+  }
 }
 
 async function openScenario(browser, name, viewport, action) {
@@ -95,9 +108,15 @@ async function openScenario(browser, name, viewport, action) {
     await page.waitForTimeout(1600)
   }
 
-  const stats = await canvasStats(page)
-  if (!stats.hasCanvas || stats.brightPixels < 200) {
-    throw new Error(`${name} canvas failed pixel check: ${JSON.stringify(stats)}`)
+  const target = path.join(SCREENSHOT_DIR, `${name}.png`)
+  const stats = await screenshotCanvasStats(page, target)
+  if (
+    !stats.hasCanvas ||
+    stats.brightPixels < 200 ||
+    stats.nonWhitePixels < 200 ||
+    stats.variedPixels < 200
+  ) {
+    throw new Error(`${name} canvas failed screenshot pixel check: ${JSON.stringify(stats)}`)
   }
   if (consoleErrors.length || pageErrors.length) {
     throw new Error(
@@ -105,8 +124,6 @@ async function openScenario(browser, name, viewport, action) {
     )
   }
 
-  const target = path.join(SCREENSHOT_DIR, `${name}.png`)
-  await page.screenshot({ path: target, fullPage: false })
   await page.close()
   return { name, target, stats }
 }
@@ -155,6 +172,13 @@ try {
 } finally {
   await browser.close()
   if (server) {
-    server.kill()
+    if (process.platform === 'win32') {
+      spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], {
+        stdio: 'ignore',
+        windowsHide: true,
+      })
+    } else {
+      server.kill()
+    }
   }
 }
