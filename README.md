@@ -1,50 +1,39 @@
-# Grandmaster Chime 3D Educational Model
+# Grandmaster Chime Full Rebuild
 
-This is a from scratch interactive educational web model inspired by the Patek Philippe Grandmaster Chime.
+This branch starts from zero.
 
-It is not an exact CAD replica. The geometry is original and simplified so the model can explain the main mechanism groups without copying Patek Philippe images, diagrams, photos, or proprietary layouts.
+The goal is a full interactive educational 3D model of the Patek Philippe Grandmaster Chime using original geometry and public information only.
 
-## Stack
+This is not an exact CAD replica. Exact movement CAD, hidden lever geometry, bridge geometry, and manufacturing drawings are not public.
 
-1. React
-2. Vite
-3. Three.js
-4. @react-three/fiber
-5. @react-three/drei
+## Target
 
-## What it does
+Build a museum style browser experience with generated 3D assets, a serious React and Three.js viewer, explanatory panels, clickable mechanism groups, and animated complication flows.
 
-1. Shows a central interactive 3D watch model
-2. Supports orbit rotate and zoom controls
-3. Flips between the time side and calendar side
-4. Explodes the movement into readable layers
-5. Adds clickable mechanism labels
-6. Explains each mechanism in beginner and advanced modes
-7. Simulates grande sonnerie, petite sonnerie, minute repeater, date repeater, alarm time strike, and calendar advance
-8. Shows animated energy flow from sonnerie barrels to strike train, governor, hammers, and gongs
-9. Lists 20 public complication groups
-10. Includes public specification notes and an abstraction disclaimer
+## Intended stack
 
-## Run locally
+1. Codex CLI
+2. React
+3. Vite
+4. Three.js
+5. React Three Fiber
+6. Drei
+7. Blender Python generated GLB assets
+8. Playwright screenshots for visual checks
+
+## First local commands
 
 ```bash
-npm install
-npm run dev
+git checkout from-zero-full-rebuild
+npm create vite@latest . -- --template react
+npm install three @react-three/fiber @react-three/drei
+npm install -D playwright
 ```
 
-## Build
+If the Vite command refuses to run because files already exist, create the app in a temp folder and move the generated files into this branch.
 
-```bash
-npm run build
-```
+## Core rule
 
-## Validation status
+Do not copy Patek Philippe images, diagrams, photos, or proprietary layouts.
 
-Validated locally on May 26, 2026.
-
-1. `npm install` completed
-2. `npm run build` completed successfully
-3. `npm run dev -- --host 127.0.0.1` started successfully
-4. HTTP check against the Vite server returned 200 OK
-
-The production build is large because Three.js and React Three Fiber add a large client bundle. The build still succeeds.
+Use public facts and original geometry only.

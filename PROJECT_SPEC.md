@@ -1,80 +1,102 @@
-Goal:
-Create an interactive educational 3D model of the Patek Philippe Grandmaster Chime from scratch.
+# Project spec
 
-The user should be able to rotate, zoom, explode, switch sides, click mechanisms, and understand how the watch works.
+## Goal
 
-The app should explain:
-1. Reversible case
-2. Timekeeping train
-3. Four barrel architecture
-4. Chiming barrels
-5. Grande sonnerie
-6. Petite sonnerie
-7. Minute repeater
-8. Date repeater
-9. Alarm time strike
-10. Perpetual calendar
-11. Moon phase
-12. Second time zone
-13. Power reserve indicators
-14. Hammers and gongs
-15. Governor
-16. Isolator mechanisms
-17. Energy flow from barrels to strike train
-18. Difference between calendar side and time side
-19. Why this is a grand complication
-20. Why the geometry shown is simplified
+Create a full interactive educational 3D model of the Patek Philippe Grandmaster Chime from zero.
 
-Main experience:
-A central 3D watch model with panels around it.
+The app should feel like a serious museum grade technical model, not a quick mockup.
 
-Required controls:
-Rotate
-Zoom
-Explode layers
-Switch front side and calendar side
-Toggle labels
-Toggle beginner and advanced explanations
-Play chiming animations
-Reset view
+## Public facts to use
 
-Required visual layers:
-Case
-Dial side
-Calendar side
-Mainplate
-Bridges
-Going train
-Balance
-Barrels
-Strike train
-Governor
-Gongs
-Hammers
-Calendar works
-Second time zone works
-Alarm works
-Power reserve indicators
+1. The Grandmaster Chime 6300GR has 20 complications.
+2. It has five acoustic functions.
+3. The acoustic functions include grande sonnerie, petite sonnerie, minute repeater, alarm with time strike, and date repeater.
+4. It has a reversible double sided case.
+5. The movement is caliber GS AL 36 750 QIS FUS IRM.
+6. The movement has 1366 parts and 108 jewels.
+7. Movement diameter is 37 mm.
+8. Movement thickness is 10.7 mm.
+9. Frequency is 25,200 semi oscillations per hour, equal to 3.5 Hz.
+10. Case diameter is 47.7 mm.
+11. Case thickness is 16.07 mm.
+12. It is humidity and dust protected only and not water resistant.
+13. The striking mechanism uses three classic gongs.
 
-Animation modes:
-Grande sonnerie
-Petite sonnerie
-Minute repeater
-Date repeater
-Alarm strike
-Calendar advance
-Case flip
-Exploded movement view
+## Required architecture
 
-Educational style:
-Use short explanations.
-Use clickable labels.
-Use animated arrows for power flow.
-Use color coded mechanical groups.
-Keep the interface clean and serious.
+1. React, Vite, Three.js, React Three Fiber, and Drei.
+2. Blender Python script under scripts/blender/generate_grandmaster_chime.py.
+3. Generated GLB assets under public/models.
+4. Viewer loads GLB assets with useGLTF.
+5. Fallback geometry is allowed only for debugging.
+6. Playwright screenshot validation under validation/screenshots.
 
-Accuracy rules:
-Use public specs only.
-Do not pretend the model is exact.
-Do not use copied Patek diagrams or images.
-Say clearly that this is an educational abstraction.
+## Required model areas
+
+1. Reversible case.
+2. Two tone case feel.
+3. Front time dial.
+4. Calendar side dial.
+5. Mainplate.
+6. Bridges with bevels.
+7. Jewels.
+8. Screws.
+9. Going barrels.
+10. Sonnerie barrels.
+11. Gear trains with teeth.
+12. Balance and escapement abstraction.
+13. Strike train.
+14. Governor.
+15. Three gongs.
+16. Three hammers.
+17. Repeater racks and snails.
+18. Date repeater racks.
+19. Alarm cam and release path.
+20. Perpetual calendar wheels.
+21. Isolator levers.
+22. Power reserve differential.
+23. Exploded layer positions.
+
+## Required interactions
+
+1. Rotate and zoom.
+2. Reset view.
+3. Switch time side and calendar side.
+4. Explode layers.
+5. Toggle labels.
+6. Toggle cutaway mode.
+7. Toggle transparent case.
+8. Click named mechanism groups.
+9. Beginner and advanced explanations.
+10. Search or filter complications.
+11. Timeline for animation phase.
+12. Source notes and non CAD disclaimer.
+
+## Required animations
+
+1. Case flip.
+2. Balance oscillation.
+3. Gear rotation.
+4. Governor spin.
+5. Hammer strikes.
+6. Energy particles from barrels to strike train to governor to hammers to gongs.
+7. Grande sonnerie.
+8. Petite sonnerie.
+9. Minute repeater.
+10. Date repeater.
+11. Alarm time strike.
+12. Calendar advance.
+13. Moon phase slow rotation.
+
+## Visual quality
+
+1. Dark museum style interface.
+2. Full screen model first layout.
+3. Serious typography.
+4. Smooth transitions.
+5. Labels hidden or minimal by default.
+6. Responsive layout.
+7. Loading state for GLB assets.
+8. Error boundary if model loading fails.
+9. Metallic materials with roughness variation.
+10. Separate materials for rose gold, white gold, brass, ruby jewels, sapphire crystal, dark dial, blued screws, and moon disk.
