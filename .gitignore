@@ -13,6 +13,8 @@ dist-ssr
 *.local
 __pycache__/
 *.py[cod]
+.vite-dev*.log
+.vite-dev.pid
 
 # Editor directories and files
 .vscode/*

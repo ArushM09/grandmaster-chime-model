@@ -1,35 +1,41 @@
 # Handoff
 
 Current status:
-Milestone 2 is complete. The project has a Blender Python generator for an original educational Grandmaster Chime model, plus a temporary Node fallback exporter because Blender is not installed on this machine. The fallback exporter generated public/models/grandmaster_chime.glb and public/models/grandmaster_chime_manifest.json with all required named mechanism groups.
+Milestone 3 is complete. The app now loads public/models/grandmaster_chime.glb through React Three Fiber and Drei useGLTF, renders it in a full-screen museum style viewer, supports orbit rotate/zoom, reset view, loading and model error states, manifest-driven mechanism selection, hover state, and selected-group highlighting. The in-app browser backend was unavailable, so runtime validation used local Playwright against the Vite dev server.
 
 Files changed:
-1. Added scripts/blender/generate_grandmaster_chime.py.
-2. Added scripts/blender/README.md with Blender install and run instructions.
-3. Added scripts/create_fallback_model.js.
-4. Added public/models/grandmaster_chime.glb.
-5. Added public/models/grandmaster_chime_manifest.json.
-6. Updated package.json with generate:blender-model and generate:fallback-model scripts.
-7. Updated eslint.config.js so src uses browser globals and scripts use Node globals.
+1. Added src/components/GrandmasterViewer.jsx.
+2. Added src/components/ModelErrorBoundary.jsx.
+3. Added src/data/mechanisms.js.
+4. Rebuilt src/App.jsx around the 3D viewer and mechanism inspector.
+5. Rebuilt src/styles.css for the full-screen viewer layout.
+6. Added lucide-react to package.json and package-lock.json.
+7. Added validation/screenshots/milestone3-viewer.png from Playwright validation.
+8. Updated .gitignore for local Vite dev logs and PID files.
 
 What works:
-1. python -m py_compile scripts/blender/generate_grandmaster_chime.py passes.
-2. npm run generate:fallback-model writes the temporary GLB and manifest.
-3. npm run lint passes.
-4. npm run build passes.
-5. The manifest includes public facts, the non-CAD accuracy boundary, and all required named mechanism groups.
+1. npm run lint passes.
+2. npm run build passes.
+3. Vite dev server runs at http://127.0.0.1:5173/.
+4. Playwright confirms a WebGL canvas is present and nonblank via pixel sampling.
+5. Playwright captured validation/screenshots/milestone3-viewer.png.
+6. Playwright confirms selecting Governor from the mechanism list updates the selected mechanism panel.
+7. Loading and model error states are implemented.
 
 What is broken:
-1. Blender is not available through PATH, so the Blender-generated GLB has not been produced on this machine.
-2. The app still renders the milestone 1 shell and does not load the GLB yet.
-3. Viewer interactions, animations, educational panels, and Playwright screenshots are still pending.
+1. Blender is still not available through PATH, so the committed GLB remains the temporary Node fallback asset.
+2. Side switching, cutaway mode, transparent case, labels, and exploded layers are not implemented yet.
+3. Chime mode animations, energy particles, timeline, search, advanced/beginner panel toggles, source notes, and final screenshot matrix are still pending.
+4. Production build emits a large chunk warning because the 3D stack is bundled into the main app; this is not a build failure.
 
 Next exact task:
-Implement the React Three Fiber viewer that loads public/models/grandmaster_chime.glb with useGLTF, shows loading and error states, supports OrbitControls, and allows named mechanism selection with highlighting.
+Implement side switching, cutaway mode, transparent case, labels, and exploded layer controls against the loaded named GLB groups.
 
 How to resume:
 1. git checkout from-zero-full-rebuild
 2. npm install
 3. npm run generate:fallback-model
-4. npm run build
-5. Continue with Milestone 3: GLB viewer loading, selection, highlighting, orbit controls, and loading/error states.
+4. npm run dev -- --host 127.0.0.1 --port 5173
+5. npm run lint
+6. npm run build
+7. Continue with Milestone 4: side switching, cutaway, labels, transparency, and exploded layers.
