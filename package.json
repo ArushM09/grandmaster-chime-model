@@ -9,7 +9,8 @@
     "generate:blender-model": "blender --background --python scripts/blender/generate_grandmaster_chime.py -- public/models/grandmaster_chime.glb",
     "generate:fallback-model": "node scripts/create_fallback_model.js",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "visual:check": "node scripts/visual_check.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
