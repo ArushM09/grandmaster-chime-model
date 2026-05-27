@@ -1,5 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BoxSelect, MousePointer2, RotateCcw } from 'lucide-react'
+import {
+  BoxSelect,
+  CalendarDays,
+  Clock3,
+  Eye,
+  Layers3,
+  MousePointer2,
+  RotateCcw,
+  ScanLine,
+  Tags,
+} from 'lucide-react'
 import GrandmasterViewer from './components/GrandmasterViewer'
 import ModelErrorBoundary from './components/ModelErrorBoundary'
 import {
@@ -45,6 +55,11 @@ function App() {
   const [selectedId, setSelectedId] = useState('Reversible_Double_Sided_Case')
   const [hoveredId, setHoveredId] = useState(null)
   const [resetSignal, setResetSignal] = useState(0)
+  const [viewSide, setViewSide] = useState('time')
+  const [exploded, setExploded] = useState(false)
+  const [labelsVisible, setLabelsVisible] = useState(false)
+  const [cutaway, setCutaway] = useState(false)
+  const [transparentCase, setTransparentCase] = useState(false)
   const { manifest, error: manifestError } = useModelManifest()
 
   const selectedMechanism = useMemo(
@@ -62,23 +77,80 @@ function App() {
             <p className="eyebrow">Museum grade technical model</p>
             <h1>Grandmaster Chime</h1>
           </div>
-          <div className="tool-row" aria-label="Viewer tools">
-            <button
-              type="button"
-              className="tool-button"
-              onClick={() => setResetSignal((value) => value + 1)}
-            >
-              <RotateCcw aria-hidden="true" size={17} />
-              <span>Reset view</span>
-            </button>
-            <button
-              type="button"
-              className="tool-button"
-              onClick={() => setSelectedId(null)}
-            >
-              <BoxSelect aria-hidden="true" size={17} />
-              <span>Clear</span>
-            </button>
+          <div className="control-stack">
+            <div className="segmented-control" aria-label="Dial side">
+              <button
+                type="button"
+                className={viewSide === 'time' ? 'active' : ''}
+                onClick={() => setViewSide('time')}
+              >
+                <Clock3 aria-hidden="true" size={16} />
+                <span>Time side</span>
+              </button>
+              <button
+                type="button"
+                className={viewSide === 'calendar' ? 'active' : ''}
+                onClick={() => setViewSide('calendar')}
+              >
+                <CalendarDays aria-hidden="true" size={16} />
+                <span>Calendar side</span>
+              </button>
+            </div>
+
+            <div className="tool-row" aria-label="Viewer tools">
+              <button
+                type="button"
+                className="tool-button"
+                onClick={() => setResetSignal((value) => value + 1)}
+              >
+                <RotateCcw aria-hidden="true" size={17} />
+                <span>Reset</span>
+              </button>
+              <button
+                type="button"
+                className={exploded ? 'tool-button active' : 'tool-button'}
+                aria-pressed={exploded}
+                onClick={() => setExploded((value) => !value)}
+              >
+                <Layers3 aria-hidden="true" size={17} />
+                <span>Explode</span>
+              </button>
+              <button
+                type="button"
+                className={labelsVisible ? 'tool-button active' : 'tool-button'}
+                aria-pressed={labelsVisible}
+                onClick={() => setLabelsVisible((value) => !value)}
+              >
+                <Tags aria-hidden="true" size={17} />
+                <span>Labels</span>
+              </button>
+              <button
+                type="button"
+                className={cutaway ? 'tool-button active' : 'tool-button'}
+                aria-pressed={cutaway}
+                onClick={() => setCutaway((value) => !value)}
+              >
+                <ScanLine aria-hidden="true" size={17} />
+                <span>Cutaway</span>
+              </button>
+              <button
+                type="button"
+                className={transparentCase ? 'tool-button active' : 'tool-button'}
+                aria-pressed={transparentCase}
+                onClick={() => setTransparentCase((value) => !value)}
+              >
+                <Eye aria-hidden="true" size={17} />
+                <span>Case</span>
+              </button>
+              <button
+                type="button"
+                className="tool-button"
+                onClick={() => setSelectedId(null)}
+              >
+                <BoxSelect aria-hidden="true" size={17} />
+                <span>Clear</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -89,6 +161,11 @@ function App() {
             resetSignal={resetSignal}
             onSelect={setSelectedId}
             onHover={setHoveredId}
+            viewSide={viewSide}
+            exploded={exploded}
+            labelsVisible={labelsVisible}
+            cutaway={cutaway}
+            transparentCase={transparentCase}
           />
         </ModelErrorBoundary>
 
@@ -131,6 +208,32 @@ function App() {
           ) : (
             <p className="empty-state">No mechanism selected.</p>
           )}
+        </section>
+
+        <section className="panel-section state-section">
+          <p className="section-kicker">Current view</p>
+          <dl>
+            <div>
+              <dt>Side</dt>
+              <dd>{viewSide === 'time' ? 'Time side' : 'Calendar side'}</dd>
+            </div>
+            <div>
+              <dt>Exploded</dt>
+              <dd>{exploded ? 'On' : 'Off'}</dd>
+            </div>
+            <div>
+              <dt>Labels</dt>
+              <dd>{labelsVisible ? 'On' : 'Off'}</dd>
+            </div>
+            <div>
+              <dt>Cutaway</dt>
+              <dd>{cutaway ? 'On' : 'Off'}</dd>
+            </div>
+            <div>
+              <dt>Transparent case</dt>
+              <dd>{transparentCase ? 'On' : 'Off'}</dd>
+            </div>
+          </dl>
         </section>
 
         <section className="panel-section">
