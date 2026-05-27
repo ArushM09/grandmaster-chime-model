@@ -1,38 +1,33 @@
 # Handoff
 
 Current status:
-Milestone 8 is complete. The full interactive educational Grandmaster Chime model is implemented on the from-zero rebuild branch. The app uses React, Vite, Three.js, React Three Fiber, Drei, generated GLB assets, named mechanism groups, educational panels, mode animations, and Playwright screenshot validation.
+The app has been further polished for readability and educational clarity, with improved default camera framing, denser and better-spaced labels, stronger technical lighting, and mode-specific status styling so each chime mode reads as distinct even before animation cues.
 
-Files changed in the final milestone:
-1. Updated README.md with current setup, commands, asset generation notes, validation commands, screenshot list, public spec anchors, and non-CAD boundary.
-2. Updated scripts/visual_check.js to start Vite reliably on Windows, capture the screenshot matrix, and validate nonblank/nonwhite canvas pixels from screenshots.
-3. Added pngjs as a dev dependency for screenshot pixel analysis.
-4. Updated vite.config.js with an intentional 3D bundle chunk warning threshold.
-5. Refreshed the required screenshot matrix under validation/screenshots.
+Files changed:
+1. src/App.jsx
+2. src/styles.css
+3. HANDOFF.md
 
 What works:
-1. npm run lint passes.
-2. npm run build passes.
-3. npm run visual:check passes.
-4. The visual check captures desktop, narrow, front side, calendar side, exploded view, and chime mode screenshots.
-5. Each visual check validates that the canvas region is nonblank and nonwhite with color variation.
-6. The app loads public/models/grandmaster_chime.glb with useGLTF.
-7. Selection, hover, highlighting, reset view, side switching, exploded layers, labels, cutaway, transparent case, beginner/advanced explanations, search, source notes, and mode timeline work.
-8. Grande sonnerie, petite sonnerie, minute repeater, date repeater, alarm time strike, calendar advance, and case flip modes are implemented with distinct phase highlighting and energy particles.
+1. Existing interactive model structure remains intact (flip, explode, labels, mode selection, explanations).
+2. Camera starts at a wider, more technical inspection angle for better layer readability.
+3. Lighting now uses mixed ambient/hemisphere/directional/spot setup for better depth contrast.
+4. Label anchor positions now scale by mechanism layer to reduce overlap.
+5. Viewer status pills now include active mechanism path hints and mode-dependent visual color treatments.
+6. Info panel now shows explicit energy route text for the current mode.
+7. Responsive layout behavior is preserved and tuned with updated styles.
 
 What is broken:
-1. Blender is still not available through PATH, so the committed GLB remains the temporary Node fallback asset.
-2. The model is mechanically plausible educational geometry, not exact CAD.
-3. Browser console output includes non-fatal Three.js deprecation warnings during dev validation, but no browser console errors or page errors were detected by the visual checks.
+1. Local dependency install is currently blocked by registry policy (`npm install` returns 403 for `@react-three/drei`).
+2. Because dependencies could not be installed, `npm run build` fails in this environment (`vite: not found`).
+3. `npm run dev` visual validation could not be executed due to missing dependencies.
 
 Next exact task:
-Install Blender on a machine with Blender available through PATH, run npm run generate:blender-model, inspect the Blender-generated GLB, then rerun npm run lint, npm run build, and npm run visual:check.
+Resolve package registry access for `@react-three/drei`, run full validation (`npm install`, `npm run build`, `npm run dev`), then visually tune mechanism animations and calendar-side detail with live browser feedback.
 
 How to resume:
-1. git checkout from-zero-full-rebuild
-2. npm install
-3. npm run generate:fallback-model
-4. npm run lint
-5. npm run build
-6. npm run visual:check
-7. npm run dev -- --host 127.0.0.1 --port 5173
+1. Ensure npm registry access allows installing `@react-three/drei`.
+2. Run `npm install`.
+3. Run `npm run build`.
+4. Run `npm run dev` and open the app.
+5. Continue with visual/animation polishing in `src/App.jsx` and `src/styles.css`.
