@@ -197,5 +197,19 @@ export const publicFactCards = [
   ['108', 'jewels'],
 ]
 
+export const acousticFunctions = [
+  ['Grande sonnerie', 'Hour and quarter strike flow'],
+  ['Petite sonnerie', 'Quarter strike flow only'],
+  ['Minute repeater', 'Racks count time before strike flow'],
+  ['Alarm with time strike', 'Alarm cam release before strike flow'],
+  ['Date repeater', 'Calendar racks count date before strike flow'],
+]
+
+export const sourceNotes = [
+  'Public spec anchors used here: Grandmaster Chime 6300GR, 20 complications, five acoustic functions, reversible double sided case, caliber GS AL 36 750 QIS FUS IRM, 1366 parts, 108 jewels, 37 mm movement diameter, 10.7 mm movement thickness, 47.7 mm case diameter, 16.07 mm case thickness, 3.5 Hz frequency, humidity and dust protected only, and three classic gongs.',
+  'The model uses original generated geometry and a temporary Node-generated GLB because Blender is not available on this machine.',
+  'No Patek Philippe images, diagrams, photos, CAD, or proprietary layouts are copied. The model is mechanically plausible educational geometry, not exact CAD.',
+]
+
 export const MODEL_PATH = '/models/grandmaster_chime.glb'
 export const MANIFEST_PATH = '/models/grandmaster_chime_manifest.json'

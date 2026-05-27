@@ -31,6 +31,15 @@ button {
   color: inherit;
 }
 
+.sr-only {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 .app-shell {
   min-height: 100svh;
   display: grid;
@@ -285,6 +294,61 @@ button {
   font-size: 0.85rem;
 }
 
+.mini-tabs {
+  padding: 2px;
+  display: inline-flex;
+  gap: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.mini-tabs button {
+  min-height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #aab4bf;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.mini-tabs button.active,
+.mini-tabs button:hover,
+.mini-tabs button:focus-visible {
+  background: rgba(216, 176, 111, 0.15);
+  color: #ffe2a4;
+  outline: none;
+}
+
+.search-box {
+  min-height: 40px;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #9aa5b1;
+}
+
+.search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f4efe6;
+}
+
+.search-box input::placeholder {
+  color: #7f8a96;
+}
+
 .mechanism-list {
   display: grid;
   gap: 7px;
@@ -417,6 +481,50 @@ button {
 
 .empty-state {
   color: #98a2ad;
+}
+
+.complication-section > p {
+  color: #b9c1c9;
+  line-height: 1.5;
+}
+
+.acoustic-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.acoustic-list div {
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.acoustic-list strong,
+.acoustic-list span {
+  display: block;
+}
+
+.acoustic-list strong {
+  color: #fff2d6;
+}
+
+.acoustic-list span {
+  margin-top: 3px;
+  color: #9aa5b1;
+  font-size: 0.85rem;
+}
+
+.source-note ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: #b9c1c9;
+  line-height: 1.48;
+}
+
+.source-note li + li {
+  margin-top: 8px;
 }
 
 .model-loading,

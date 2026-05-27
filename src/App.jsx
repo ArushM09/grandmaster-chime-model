@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Rotate3D,
   ScanLine,
+  Search,
   Tags,
   Timer,
 } from 'lucide-react'
@@ -21,9 +22,11 @@ import ModelErrorBoundary from './components/ModelErrorBoundary'
 import { animationModes, getAnimationSnapshot } from './data/animationModes'
 import {
   MANIFEST_PATH,
+  acousticFunctions,
   mechanismMap,
   mechanisms,
   publicFactCards,
+  sourceNotes,
 } from './data/mechanisms'
 
 const animationIcons = {
@@ -82,12 +85,33 @@ function App() {
   const [animationSnapshot, setAnimationSnapshot] = useState(() =>
     getAnimationSnapshot('idle', 0),
   )
+  const [explanationLevel, setExplanationLevel] = useState('beginner')
+  const [searchTerm, setSearchTerm] = useState('')
   const { manifest, error: manifestError } = useModelManifest()
 
   const selectedMechanism = useMemo(
     () => mechanismMap.get(selectedId) || null,
     [selectedId],
   )
+
+  const filteredMechanisms = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase()
+    if (!query) {
+      return mechanisms
+    }
+
+    return mechanisms.filter((mechanism) =>
+      [
+        mechanism.label,
+        mechanism.category,
+        mechanism.beginner,
+        mechanism.advanced,
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(query),
+    )
+  }, [searchTerm])
 
   const assetType = manifest?.assetType || 'loading asset manifest'
 
@@ -222,12 +246,30 @@ function App() {
         </section>
 
         <section className="panel-section selected-section" aria-live="polite">
-          <p className="section-kicker">Selected group</p>
+          <div className="section-heading">
+            <p className="section-kicker">Selected group</p>
+            <div className="mini-tabs" aria-label="Explanation level">
+              <button
+                type="button"
+                className={explanationLevel === 'beginner' ? 'active' : ''}
+                onClick={() => setExplanationLevel('beginner')}
+              >
+                Beginner
+              </button>
+              <button
+                type="button"
+                className={explanationLevel === 'advanced' ? 'active' : ''}
+                onClick={() => setExplanationLevel('advanced')}
+              >
+                Advanced
+              </button>
+            </div>
+          </div>
           {selectedMechanism ? (
             <>
               <h3>{selectedMechanism.label}</h3>
               <span className="category-pill">{selectedMechanism.category}</span>
-              <p>{selectedMechanism.beginner}</p>
+              <p>{selectedMechanism[explanationLevel]}</p>
             </>
           ) : (
             <p className="empty-state">No mechanism selected.</p>
@@ -305,10 +347,22 @@ function App() {
         <section className="panel-section">
           <div className="section-heading">
             <p className="section-kicker">Clickable groups</p>
-            <span>{mechanisms.length}</span>
+            <span>
+              {filteredMechanisms.length}/{mechanisms.length}
+            </span>
           </div>
+          <label className="search-box">
+            <Search aria-hidden="true" size={16} />
+            <span className="sr-only">Search mechanisms</span>
+            <input
+              type="search"
+              placeholder="Search mechanisms"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </label>
           <div className="mechanism-list">
-            {mechanisms.map((mechanism) => (
+            {filteredMechanisms.map((mechanism) => (
               <button
                 type="button"
                 className={
@@ -325,6 +379,25 @@ function App() {
                 <small>{mechanism.category}</small>
               </button>
             ))}
+            {filteredMechanisms.length === 0 ? (
+              <p className="empty-state">No matching mechanisms.</p>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="panel-section complication-section">
+          <p className="section-kicker">Acoustic functions</p>
+          <p>
+            The public specification identifies five acoustic functions. The
+            animation modes keep those functions visually distinct.
+          </p>
+          <div className="acoustic-list">
+            {acousticFunctions.map(([name, detail]) => (
+              <div key={name}>
+                <strong>{name}</strong>
+                <span>{detail}</span>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -337,6 +410,15 @@ function App() {
               : ''}
           </p>
           {manifestError ? <p>{manifestError.message}</p> : null}
+        </section>
+
+        <section className="panel-section source-note">
+          <p className="section-kicker">Source notes and disclaimer</p>
+          <ul>
+            {sourceNotes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
         </section>
       </aside>
     </main>
