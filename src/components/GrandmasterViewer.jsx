@@ -1,11 +1,13 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, Html, OrbitControls, useCursor, useGLTF } from '@react-three/drei'
 import { Color, DoubleSide, MathUtils, Plane, Vector3 } from 'three'
+import { getAnimationSnapshot } from '../data/animationModes'
 import { MODEL_PATH, mechanismIds, mechanisms } from '../data/mechanisms'
 
 const SELECTED_COLOR = new Color('#ffd27a')
 const HOVER_COLOR = new Color('#7fc7ff')
+const ACTIVE_COLOR = new Color('#ff9b35')
 const BASE_CAMERA = [0, -58, 34]
 const BASE_TARGET = [0, 0, 0]
 const CUTAWAY_PLANE = new Plane(new Vector3(1, 0, 0), 0)
@@ -64,6 +66,61 @@ const LABEL_LAYOUT = {
   Alarm_Cam_And_Release_Path: [12, 12.2, 8.1],
 }
 
+const ENERGY_PATHS = {
+  hourStrike: [
+    [6.8, 6.3, 4.3],
+    [4.7, 2.5, 4.5],
+    [8.7, 0.4, 4.5],
+    [10.3, 2.1, 4.8],
+    [12.1, -8.3, 4.8],
+    [-14.8, -13.1, 5],
+  ],
+  quarterStrike: [
+    [3.8, 6.8, 4.2],
+    [5.8, 2.2, 4.5],
+    [10.2, 2.1, 4.8],
+    [13.7, -9.4, 4.8],
+    [-15.6, -12.1, 5.1],
+  ],
+  minuteRacks: [
+    [-5.5, -8.4, 4.2],
+    [-1.1, -8.5, 4.4],
+    [2.9, -6.8, 4.5],
+    [4.6, 1.6, 4.7],
+  ],
+  dateRacks: [
+    [-10, 4.5, 4.2],
+    [-8.6, 2.6, 4.4],
+    [-3.2, 0.4, 4.5],
+    [4.5, 1.7, 4.7],
+  ],
+  alarmRelease: [
+    [8.4, -6.6, 4.3],
+    [6.1, -5.5, 4.5],
+    [5.4, -0.8, 4.7],
+    [7.1, 1.4, 4.7],
+  ],
+  alarmStrike: [
+    [8.4, -6.6, 4.3],
+    [7.1, 1.2, 4.5],
+    [10.2, 2.1, 4.8],
+    [13.5, -9.2, 4.8],
+    [-15.2, -12.7, 5.1],
+  ],
+  calendarAdvance: [
+    [0, -10.3, 4.1],
+    [3.2, -9.5, 4.4],
+    [-3.4, -9.6, 4.4],
+    [-6.8, -10.1, 4.6],
+    [-8.9, 2.8, 4.7],
+  ],
+  gongDecay: [
+    [13.6, -9, 4.8],
+    [-15.2, -12.4, 5.1],
+    [-16.5, -10.7, 5.4],
+  ],
+}
+
 function resolveMechanismGroup(object) {
   let current = object
   while (current) {
@@ -117,7 +174,14 @@ function captureBaseMaterial(material) {
   return material.userData.__baseState
 }
 
-function applyMaterialState(scene, selectedId, hoveredId, cutaway, transparentCase) {
+function applyMaterialState(
+  scene,
+  selectedId,
+  hoveredId,
+  cutaway,
+  transparentCase,
+  activeGroupIds,
+) {
   scene.traverse((object) => {
     if (!object.isMesh || !object.material) {
       return
@@ -143,6 +207,16 @@ function applyMaterialState(scene, selectedId, hoveredId, cutaway, transparentCa
       material.side = base.side
       material.clippingPlanes = cutaway ? [CUTAWAY_PLANE] : null
       material.clipShadows = cutaway
+
+      if (groupId && activeGroupIds.has(groupId)) {
+        if (material.color) {
+          material.color.lerp(ACTIVE_COLOR, 0.36)
+        }
+        if (material.emissive) {
+          material.emissive.copy(ACTIVE_COLOR)
+          material.emissiveIntensity = 0.42
+        }
+      }
 
       if (groupId && groupId === selectedId) {
         if (material.color) {
@@ -203,6 +277,115 @@ function collectLabelAnchors(scene) {
       position,
     }
   })
+}
+
+function collectAnimatedObjects(scene) {
+  const objects = {
+    gears: [],
+    hammers: [],
+    governor: scene.getObjectByName('Governor'),
+    balance: scene.getObjectByName('Balance_And_Escapement_Abstraction'),
+    moon: scene.getObjectByName('Moon_Phase'),
+    calendar: scene.getObjectByName('Perpetual_Calendar_Wheels'),
+    case: scene.getObjectByName('Reversible_Double_Sided_Case'),
+  }
+
+  scene.traverse((object) => {
+    const name = object.name.toLowerCase()
+    if (
+      object.children.length > 0 &&
+      (name.includes('gear') ||
+        name.includes('wheel') ||
+        name.includes('snail') ||
+        name.includes('cam') ||
+        name.includes('differential'))
+    ) {
+      objects.gears.push(object)
+    }
+
+    if (name.includes('hammer_') && (name.includes('_arm') || name.includes('_head'))) {
+      object.userData.baseRotationZ = object.rotation.z
+      objects.hammers.push(object)
+    }
+  })
+
+  return objects
+}
+
+function pointOnPath(points, progress) {
+  if (!points || points.length === 0) {
+    return [0, 0, 0]
+  }
+  if (points.length === 1) {
+    return points[0]
+  }
+
+  const scaled = Math.min(0.999, Math.max(0, progress)) * (points.length - 1)
+  const index = Math.floor(scaled)
+  const local = scaled - index
+  const from = points[index]
+  const to = points[index + 1]
+  return [
+    MathUtils.lerp(from[0], to[0], local),
+    MathUtils.lerp(from[1], to[1], local),
+    MathUtils.lerp(from[2], to[2], local),
+  ]
+}
+
+function EnergyParticles({ animationMode }) {
+  const particleRefs = useRef([])
+  const startRef = useRef(0)
+
+  useEffect(() => {
+    startRef.current = null
+  }, [animationMode])
+
+  useFrame(({ clock }) => {
+    if (startRef.current === null) {
+      startRef.current = clock.elapsedTime
+    }
+    const snapshot = getAnimationSnapshot(animationMode, clock.elapsedTime - startRef.current)
+    const path = ENERGY_PATHS[snapshot.path]
+
+    particleRefs.current.forEach((particle, index) => {
+      if (!particle) {
+        return
+      }
+
+      particle.visible = Boolean(path)
+      if (!path) {
+        return
+      }
+
+      const progress = (snapshot.phaseProgress + index / particleRefs.current.length) % 1
+      const position = pointOnPath(path, progress)
+      particle.position.set(...position)
+      const pulse = 0.68 + Math.sin(clock.elapsedTime * 12 + index) * 0.22
+      particle.scale.setScalar(pulse)
+    })
+  })
+
+  return (
+    <group name="Animated_Energy_Particles">
+      {Array.from({ length: 18 }).map((_, index) => (
+        <mesh
+          key={index}
+          ref={(node) => {
+            particleRefs.current[index] = node
+          }}
+          visible={false}
+        >
+          <sphereGeometry args={[0.16, 16, 8]} />
+          <meshStandardMaterial
+            color="#ffbf4d"
+            emissive="#ff7a1a"
+            emissiveIntensity={1.6}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+    </group>
+  )
 }
 
 function ModelLoading() {
@@ -282,28 +465,66 @@ function GrandmasterModel({
   labelsVisible,
   cutaway,
   transparentCase,
+  animationMode,
+  onAnimationUpdate,
 }) {
   const gltf = useGLTF(MODEL_PATH)
   const rootRef = useRef(null)
   const scene = useMemo(() => cloneScene(gltf.scene), [gltf.scene])
   const mechanismObjects = useMemo(() => collectMechanismObjects(scene), [scene])
   const labelAnchors = useMemo(() => collectLabelAnchors(scene), [scene])
+  const animatedObjects = useMemo(() => collectAnimatedObjects(scene), [scene])
+  const [animationSnapshot, setAnimationSnapshot] = useState(() =>
+    getAnimationSnapshot(animationMode, 0),
+  )
+  const animationStartRef = useRef(null)
+  const lastAnimationPublishRef = useRef(0)
 
   useCursor(Boolean(hoveredId))
 
   useEffect(() => {
-    applyMaterialState(scene, selectedId, hoveredId, cutaway, transparentCase)
-  }, [cutaway, hoveredId, scene, selectedId, transparentCase])
+    const activeGroupIds = new Set(animationSnapshot.activeGroups)
+    applyMaterialState(
+      scene,
+      selectedId,
+      hoveredId,
+      cutaway,
+      transparentCase,
+      activeGroupIds,
+    )
+  }, [animationSnapshot, cutaway, hoveredId, scene, selectedId, transparentCase])
+
+  useEffect(() => {
+    animationStartRef.current = null
+    const snapshot = getAnimationSnapshot(animationMode, 0)
+    setAnimationSnapshot(snapshot)
+    onAnimationUpdate?.(snapshot)
+  }, [animationMode, onAnimationUpdate])
 
   useFrame(({ clock }, delta) => {
+    if (animationStartRef.current === null) {
+      animationStartRef.current = clock.elapsedTime
+    }
+    const modeElapsed = clock.elapsedTime - animationStartRef.current
+    const snapshot = getAnimationSnapshot(animationMode, modeElapsed)
+    if (clock.elapsedTime - lastAnimationPublishRef.current > 0.12) {
+      lastAnimationPublishRef.current = clock.elapsedTime
+      setAnimationSnapshot(snapshot)
+      onAnimationUpdate?.(snapshot)
+    }
+
     if (rootRef.current) {
-      const targetRotation = viewSide === 'calendar' ? Math.PI : 0
-      rootRef.current.rotation.x = MathUtils.damp(
-        rootRef.current.rotation.x,
-        targetRotation,
-        5,
-        delta,
-      )
+      const baseRotation = viewSide === 'calendar' ? Math.PI : 0
+      if (animationMode === 'case_flip') {
+        rootRef.current.rotation.x = baseRotation + modeElapsed * 1.2
+      } else {
+        rootRef.current.rotation.x = MathUtils.damp(
+          rootRef.current.rotation.x,
+          baseRotation,
+          5,
+          delta,
+        )
+      }
     }
 
     mechanismObjects.forEach((object, id) => {
@@ -312,9 +533,43 @@ function GrandmasterModel({
       object.position.z = MathUtils.damp(object.position.z, targetZ, 7, delta)
     })
 
-    const balance = scene.getObjectByName('Balance_And_Escapement_Abstraction')
-    if (balance) {
-      balance.rotation.z = Math.sin(clock.elapsedTime * Math.PI * 7) * 0.015
+    animatedObjects.gears.forEach((object, index) => {
+      const speed = animationMode === 'idle' ? 0.18 : 0.62
+      object.rotation.z += delta * speed * (index % 2 === 0 ? 1 : -1)
+    })
+
+    if (animatedObjects.balance) {
+      animatedObjects.balance.rotation.z = Math.sin(clock.elapsedTime * Math.PI * 7) * 0.022
+    }
+
+    if (animatedObjects.governor) {
+      const spin =
+        animationSnapshot.activeGroups.includes('Governor') || animationMode !== 'idle'
+          ? 7.5
+          : 0.7
+      animatedObjects.governor.rotation.z += delta * spin
+    }
+
+    if (animatedObjects.moon) {
+      const moonSpeed = animationMode === 'calendar_advance' ? 0.45 : 0.035
+      animatedObjects.moon.rotation.z += delta * moonSpeed
+    }
+
+    if (animatedObjects.calendar && animationMode === 'calendar_advance') {
+      animatedObjects.calendar.rotation.z += delta * 0.75
+    }
+
+    const hammerActive = animationSnapshot.activeGroups.includes('Three_Hammers')
+    animatedObjects.hammers.forEach((object, index) => {
+      const base = object.userData.baseRotationZ || 0
+      const strikePulse = hammerActive
+        ? Math.max(0, Math.sin(modeElapsed * Math.PI * 5 + index * 0.9))
+        : 0
+      object.rotation.z = base + strikePulse * 0.28
+    })
+
+    if (animatedObjects.case && animationMode === 'case_flip') {
+      animatedObjects.case.rotation.z = Math.sin(modeElapsed * Math.PI * 1.4) * 0.04
     }
   })
 
@@ -346,6 +601,7 @@ function GrandmasterModel({
           selectedId={selectedId}
         />
       ) : null}
+      <EnergyParticles animationMode={animationMode} />
     </group>
   )
 }

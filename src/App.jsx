@@ -1,23 +1,41 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   BoxSelect,
+  Bell,
   CalendarDays,
   Clock3,
   Eye,
   Layers3,
   MousePointer2,
+  PauseCircle,
+  RefreshCw,
+  Repeat2,
   RotateCcw,
+  Rotate3D,
   ScanLine,
   Tags,
+  Timer,
 } from 'lucide-react'
 import GrandmasterViewer from './components/GrandmasterViewer'
 import ModelErrorBoundary from './components/ModelErrorBoundary'
+import { animationModes, getAnimationSnapshot } from './data/animationModes'
 import {
   MANIFEST_PATH,
   mechanismMap,
   mechanisms,
   publicFactCards,
 } from './data/mechanisms'
+
+const animationIcons = {
+  idle: PauseCircle,
+  case_flip: Rotate3D,
+  grande_sonnerie: Bell,
+  petite_sonnerie: Bell,
+  minute_repeater: Timer,
+  date_repeater: Repeat2,
+  alarm_strike: Bell,
+  calendar_advance: RefreshCw,
+}
 
 function useModelManifest() {
   const [manifest, setManifest] = useState(null)
@@ -60,6 +78,10 @@ function App() {
   const [labelsVisible, setLabelsVisible] = useState(false)
   const [cutaway, setCutaway] = useState(false)
   const [transparentCase, setTransparentCase] = useState(false)
+  const [animationMode, setAnimationMode] = useState('idle')
+  const [animationSnapshot, setAnimationSnapshot] = useState(() =>
+    getAnimationSnapshot('idle', 0),
+  )
   const { manifest, error: manifestError } = useModelManifest()
 
   const selectedMechanism = useMemo(
@@ -166,6 +188,8 @@ function App() {
             labelsVisible={labelsVisible}
             cutaway={cutaway}
             transparentCase={transparentCase}
+            animationMode={animationMode}
+            onAnimationUpdate={setAnimationSnapshot}
           />
         </ModelErrorBoundary>
 
@@ -234,6 +258,48 @@ function App() {
               <dd>{transparentCase ? 'On' : 'Off'}</dd>
             </div>
           </dl>
+        </section>
+
+        <section className="panel-section animation-section">
+          <div className="section-heading">
+            <p className="section-kicker">Animation mode</p>
+            <span>{animationSnapshot.mode.shortLabel}</span>
+          </div>
+          <div className="mode-grid">
+            {animationModes.map((mode) => {
+              const Icon = animationIcons[mode.id] || Bell
+              return (
+                <button
+                  type="button"
+                  className={
+                    animationMode === mode.id ? 'mode-button active' : 'mode-button'
+                  }
+                  key={mode.id}
+                  onClick={() => setAnimationMode(mode.id)}
+                >
+                  <Icon aria-hidden="true" size={15} />
+                  <span>{mode.shortLabel}</span>
+                </button>
+              )
+            })}
+          </div>
+          <div className="timeline-card" aria-live="polite">
+            <div className="timeline-copy">
+              <span>{animationSnapshot.mode.label}</span>
+              <strong>{animationSnapshot.phase.label}</strong>
+            </div>
+            <div
+              className="timeline-track"
+              role="progressbar"
+              aria-label="Animation phase timeline"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow={Math.round(animationSnapshot.progress * 100)}
+            >
+              <span style={{ width: `${animationSnapshot.progress * 100}%` }} />
+            </div>
+            <p>{animationSnapshot.mode.description}</p>
+          </div>
         </section>
 
         <section className="panel-section">

@@ -290,6 +290,86 @@ button {
   gap: 7px;
 }
 
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.mode-button {
+  min-height: 40px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #edf2f6;
+  cursor: pointer;
+  font-weight: 750;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.mode-button:hover,
+.mode-button:focus-visible,
+.mode-button.active {
+  color: #ffe2a4;
+  border-color: rgba(216, 176, 111, 0.64);
+  background: rgba(216, 176, 111, 0.12);
+  outline: none;
+}
+
+.timeline-card {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.timeline-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.timeline-copy span {
+  color: #96a3af;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.timeline-copy strong {
+  color: #fff2d6;
+}
+
+.timeline-track {
+  height: 8px;
+  margin-top: 11px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.timeline-track span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #d8b06f, #ff8c2e);
+  box-shadow: 0 0 18px rgba(255, 140, 46, 0.55);
+}
+
+.timeline-card p {
+  margin: 10px 0 0;
+  color: #aab4bf;
+  line-height: 1.45;
+}
+
 .mechanism-row {
   width: 100%;
   min-height: 48px;
