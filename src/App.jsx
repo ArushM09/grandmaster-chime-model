@@ -2,6 +2,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Html, OrbitControls } from '@react-three/drei'
 import { useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { generatedModelMeta, movementZones } from './generatedModel'
 
 const officialFacts = [
   { label: '20 complications', value: 'five acoustic functions plus calendar, travel time, reserves, and indications' },
@@ -135,7 +136,7 @@ const mechanisms = [
     name: 'Bridge cluster',
     side: 'both',
     type: 'bridges',
-    pos: [0.16, 0.05, 0.04],
+    pos: [0.02, 0.02, 0.04],
     layer: 3,
     color: '#b8a46f',
     group: 'Structure',
@@ -146,7 +147,7 @@ const mechanisms = [
     name: 'Going barrels',
     side: 'front',
     type: 'barrels',
-    pos: [-0.62, 0.25, 0.08],
+    pos: [-0.58, 0.38, 0.08],
     layer: 4,
     color: '#d89537',
     group: 'Energy',
@@ -157,7 +158,7 @@ const mechanisms = [
     name: 'Sonnerie barrels',
     side: 'front',
     type: 'barrels',
-    pos: [-0.64, -0.2, 0.1],
+    pos: [-0.6, -0.34, 0.1],
     layer: 4,
     color: '#c0782f',
     group: 'Energy',
@@ -168,7 +169,7 @@ const mechanisms = [
     name: 'Going train',
     side: 'front',
     type: 'gearTrain',
-    pos: [0.05, 0.28, 0.12],
+    pos: [0.04, 0.34, 0.12],
     layer: 5,
     color: '#e4c36d',
     group: 'Timekeeping',
@@ -179,7 +180,7 @@ const mechanisms = [
     name: 'Balance and escapement',
     side: 'front',
     type: 'balance',
-    pos: [0.68, 0.22, 0.16],
+    pos: [0.66, 0.32, 0.16],
     layer: 6,
     color: '#87c6ff',
     group: 'Timekeeping',
@@ -190,7 +191,7 @@ const mechanisms = [
     name: 'Second time zone works',
     side: 'front',
     type: 'timezone',
-    pos: [0.13, 0.7, 0.18],
+    pos: [0.02, 0.76, 0.18],
     layer: 5,
     color: '#5ecbd2',
     group: 'Timekeeping',
@@ -201,7 +202,7 @@ const mechanisms = [
     name: 'Mode selector',
     side: 'front',
     type: 'selector',
-    pos: [-0.15, -0.72, 0.2],
+    pos: [-0.16, -0.76, 0.2],
     layer: 5,
     color: '#cfa363',
     group: 'Control',
@@ -212,7 +213,7 @@ const mechanisms = [
     name: 'Strike train',
     side: 'front',
     type: 'gearTrain',
-    pos: [0.18, -0.32, 0.16],
+    pos: [0.08, -0.34, 0.16],
     layer: 5,
     color: '#f39a4a',
     group: 'Striking',
@@ -223,7 +224,7 @@ const mechanisms = [
     name: 'Repeater racks',
     side: 'front',
     type: 'racks',
-    pos: [0.47, -0.05, 0.2],
+    pos: [0.46, -0.1, 0.2],
     layer: 6,
     color: '#f0b76f',
     group: 'Striking',
@@ -234,7 +235,7 @@ const mechanisms = [
     name: 'Date repeater racks',
     side: 'calendar',
     type: 'racks',
-    pos: [0.45, -0.08, -0.2],
+    pos: [0.38, -0.08, -0.2],
     layer: 6,
     color: '#e98b72',
     group: 'Striking',
@@ -245,7 +246,7 @@ const mechanisms = [
     name: 'Governor',
     side: 'front',
     type: 'governor',
-    pos: [0.72, -0.43, 0.18],
+    pos: [0.66, -0.38, 0.18],
     layer: 7,
     color: '#8facd6',
     group: 'Striking',
@@ -256,7 +257,7 @@ const mechanisms = [
     name: 'Hammers',
     side: 'front',
     type: 'hammers',
-    pos: [-0.12, -0.72, 0.24],
+    pos: [0.36, -0.74, 0.24],
     layer: 7,
     color: '#f06a5d',
     group: 'Acoustic',
@@ -267,7 +268,7 @@ const mechanisms = [
     name: 'Three gongs',
     side: 'front',
     type: 'gongs',
-    pos: [0, 0, 0.2],
+    pos: [0, 0, 0.22],
     layer: 3,
     color: '#8ed2ff',
     group: 'Acoustic',
@@ -278,7 +279,7 @@ const mechanisms = [
     name: 'Perpetual calendar works',
     side: 'calendar',
     type: 'calendarWorks',
-    pos: [-0.1, 0.2, -0.18],
+    pos: [-0.04, 0.12, -0.18],
     layer: 5,
     color: '#b488ff',
     group: 'Calendar',
@@ -289,7 +290,7 @@ const mechanisms = [
     name: 'Leap year wheel',
     side: 'calendar',
     type: 'calendarWheel',
-    pos: [-0.62, 0.42, -0.2],
+    pos: [-0.5, 0.42, -0.2],
     layer: 6,
     color: '#a470d8',
     group: 'Calendar',
@@ -300,7 +301,7 @@ const mechanisms = [
     name: 'Year display',
     side: 'calendar',
     type: 'year',
-    pos: [0.45, 0.45, -0.22],
+    pos: [0.46, 0.43, -0.22],
     layer: 6,
     color: '#d5b6ff',
     group: 'Calendar',
@@ -311,7 +312,7 @@ const mechanisms = [
     name: 'Moon phase',
     side: 'calendar',
     type: 'moon',
-    pos: [-0.48, -0.48, -0.22],
+    pos: [-0.42, -0.5, -0.22],
     layer: 6,
     color: '#6a8dff',
     group: 'Calendar',
@@ -322,7 +323,7 @@ const mechanisms = [
     name: 'Alarm works',
     side: 'calendar',
     type: 'alarm',
-    pos: [0.6, -0.45, -0.18],
+    pos: [0.52, -0.5, -0.18],
     layer: 6,
     color: '#ff7aa8',
     group: 'Alarm',
@@ -333,7 +334,7 @@ const mechanisms = [
     name: 'Power reserve differential',
     side: 'both',
     type: 'reserve',
-    pos: [-0.04, -0.54, 0.04],
+    pos: [-0.08, -0.58, 0.04],
     layer: 6,
     color: '#72d99d',
     group: 'Energy',
@@ -344,7 +345,7 @@ const mechanisms = [
     name: 'Isolator levers',
     side: 'front',
     type: 'levers',
-    pos: [0.28, -0.62, 0.22],
+    pos: [0.2, -0.62, 0.22],
     layer: 7,
     color: '#ffc86b',
     group: 'Control',
@@ -381,7 +382,7 @@ function useSpin(speed, active = true, axis = 'z') {
 
 function Gear({ radius = 0.16, color = '#d6b56d', speed = 0.6, active = false }) {
   const ref = useSpin(active ? speed : speed * 0.25, true, 'z')
-  const teeth = useMemo(() => Array.from({ length: 18 }, (_, i) => i), [])
+  const teeth = useMemo(() => Array.from({ length: Math.max(14, Math.round(radius * 118)) }, (_, i) => i), [radius])
   return (
     <group ref={ref}>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
@@ -396,11 +397,17 @@ function Gear({ radius = 0.16, color = '#d6b56d', speed = 0.6, active = false })
         const angle = tooth * Math.PI * 2 / teeth.length
         return (
           <mesh key={tooth} position={[Math.cos(angle) * radius * 1.08, Math.sin(angle) * radius * 1.08, 0]} rotation={[0, 0, angle]}>
-            <boxGeometry args={[0.045, 0.018, 0.055]} />
+            <boxGeometry args={[radius * 0.28, 0.016, 0.055]} />
             <meshStandardMaterial color={color} metalness={0.72} roughness={0.3} emissive={active ? '#2f2210' : '#000000'} />
           </mesh>
         )
       })}
+      {[0, 1, 2, 3, 4, 5].map((spoke) => (
+        <mesh key={`spoke-${spoke}`} rotation={[0, 0, spoke * Math.PI / 3]}>
+          <boxGeometry args={[radius * 1.2, 0.012, 0.02]} />
+          <meshStandardMaterial color="#f8dd98" metalness={0.78} roughness={0.24} />
+        </mesh>
+      ))}
     </group>
   )
 }
@@ -441,9 +448,14 @@ function Barrels({ color, active }) {
 function GearTrain({ color, active }) {
   return (
     <group>
-      <group position={[-0.18, 0.02, 0]}><Gear radius={0.14} color={color} speed={0.8} active={active} /></group>
-      <group position={[0.02, -0.05, 0.02]}><Gear radius={0.1} color="#d8c27d" speed={-1.2} active={active} /></group>
-      <group position={[0.18, 0.05, 0.04]}><Gear radius={0.075} color={color} speed={1.8} active={active} /></group>
+      <group position={[-0.24, 0.02, 0]}><Gear radius={0.16} color={color} speed={0.8} active={active} /></group>
+      <group position={[-0.02, -0.03, 0.025]}><Gear radius={0.115} color="#d8c27d" speed={-1.2} active={active} /></group>
+      <group position={[0.18, 0.04, 0.05]}><Gear radius={0.085} color={color} speed={1.8} active={active} /></group>
+      <group position={[0.32, -0.04, 0.075]}><Gear radius={0.06} color="#f7dda0" speed={-2.4} active={active} /></group>
+      <mesh position={[0.04, -0.16, 0.01]} rotation={[0, 0, 0.18]}>
+        <boxGeometry args={[0.64, 0.018, 0.018]} />
+        <meshStandardMaterial color="#6f7a83" metalness={0.68} roughness={0.28} />
+      </mesh>
     </group>
   )
 }
@@ -521,9 +533,15 @@ function Gongs({ active }) {
   return (
     <group>
       {[0, 1, 2].map((gong) => (
-        <mesh key={gong} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, gong * 0.026]}>
-          <torusGeometry args={[1.04 - gong * 0.085, 0.009, 8, 96]} />
+        <mesh key={gong} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, gong * 0.03]}>
+          <torusGeometry args={[1.02 - gong * 0.075, 0.01, 8, 128]} />
           <meshStandardMaterial color={gong === 0 ? '#9edbff' : gong === 1 ? '#7cc7f0' : '#5eaedb'} metalness={0.86} roughness={0.18} emissive={active ? '#0a2b40' : '#000000'} />
+        </mesh>
+      ))}
+      {[0.42, 0.56, 0.7].map((x, index) => (
+        <mesh key={`block-${index}`} position={[x, -0.86 + index * 0.035, 0.08]}>
+          <boxGeometry args={[0.14, 0.05, 0.06]} />
+          <meshStandardMaterial color="#b9c7d6" metalness={0.74} roughness={0.2} />
         </mesh>
       ))}
     </group>
@@ -535,17 +553,35 @@ function TimeDial({ active }) {
     <group>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.92, 0.92, 0.05, 96]} />
-        <meshStandardMaterial color="#4b3127" metalness={0.3} roughness={0.55} emissive={active ? '#140906' : '#000000'} />
+        <meshStandardMaterial color="#3a3028" metalness={0.38} roughness={0.5} emissive={active ? '#120d08' : '#000000'} />
       </mesh>
-      {[0, 1, 2, 3, 4, 5].map((mark) => {
-        const a = mark * Math.PI / 3
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.035]}>
+        <torusGeometry args={[0.79, 0.006, 8, 128]} />
+        <meshStandardMaterial color="#d8bf82" metalness={0.78} roughness={0.24} />
+      </mesh>
+      {Array.from({ length: 60 }, (_, mark) => {
+        const a = mark * Math.PI * 2 / 60
+        const major = mark % 5 === 0
         return (
-          <mesh key={mark} position={[Math.cos(a) * 0.74, Math.sin(a) * 0.74, 0.04]} rotation={[0, 0, a]}>
-            <boxGeometry args={[0.1, 0.012, 0.018]} />
+          <mesh key={mark} position={[Math.cos(a) * 0.74, Math.sin(a) * 0.74, 0.055]} rotation={[0, 0, a]}>
+            <boxGeometry args={[major ? 0.095 : 0.04, major ? 0.014 : 0.006, 0.018]} />
             <meshStandardMaterial color="#f1d79a" metalness={0.8} roughness={0.22} />
           </mesh>
         )
       })}
+      {[[-0.38, -0.34, 'SON'], [0.38, -0.34, 'PWR'], [0, 0.42, '24H']].map(([x, y, label]) => (
+        <group key={label} position={[x, y, 0.06]}>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.15, 0.15, 0.018, 48]} />
+            <meshStandardMaterial color="#111923" metalness={0.5} roughness={0.36} />
+          </mesh>
+          <mesh position={[0.02, 0.01, 0.02]} rotation={[0, 0, -0.8]}>
+            <boxGeometry args={[0.012, 0.12, 0.014]} />
+            <meshStandardMaterial color="#d9ecff" metalness={0.6} roughness={0.26} />
+          </mesh>
+          <Html distanceFactor={9} center><span className="tiny-dial-text">{label}</span></Html>
+        </group>
+      ))}
       <mesh position={[0, 0.18, 0.07]} rotation={[0, 0, -0.2]}>
         <boxGeometry args={[0.035, 0.48, 0.018]} />
         <meshStandardMaterial color="#f6d895" metalness={0.7} roughness={0.22} />
@@ -563,17 +599,38 @@ function CalendarDial({ active }) {
     <group>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.92, 0.92, 0.05, 96]} />
-        <meshStandardMaterial color="#402b3b" metalness={0.32} roughness={0.55} emissive={active ? '#110813' : '#000000'} />
+        <meshStandardMaterial color="#312d38" metalness={0.34} roughness={0.52} emissive={active ? '#0e0a13' : '#000000'} />
       </mesh>
-      {[[-0.42, 0.28, 'DAY'], [0.42, 0.28, 'MON'], [0, -0.38, 'DATE']].map(([x, y, label]) => (
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.035]}>
+        <torusGeometry args={[0.8, 0.006, 8, 128]} />
+        <meshStandardMaterial color="#c7b2e8" metalness={0.7} roughness={0.26} />
+      </mesh>
+      {[[-0.43, 0.32, 'DAY'], [0.43, 0.32, 'MONTH'], [0, -0.39, 'DATE'], [0, 0.04, 'YEAR']].map(([x, y, label]) => (
         <group key={label} position={[x, y, 0.055]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.16, 0.16, 0.022, 40]} />
-            <meshStandardMaterial color="#171d29" metalness={0.4} roughness={0.4} />
+            <cylinderGeometry args={[label === 'YEAR' ? 0.21 : 0.17, label === 'YEAR' ? 0.21 : 0.17, 0.022, 56]} />
+            <meshStandardMaterial color="#151927" metalness={0.42} roughness={0.38} />
+          </mesh>
+          <mesh position={[0.03, 0.02, 0.023]} rotation={[0, 0, label === 'MONTH' ? 0.7 : -0.5]}>
+            <boxGeometry args={[0.011, label === 'YEAR' ? 0.15 : 0.12, 0.014]} />
+            <meshStandardMaterial color="#e5d6ff" metalness={0.55} roughness={0.25} />
           </mesh>
           <Html distanceFactor={8} center><span className="tiny-dial-text">{label}</span></Html>
         </group>
       ))}
+      <group position={[0.43, -0.42, 0.06]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.13, 0.13, 0.02, 40]} />
+          <meshStandardMaterial color="#161b28" metalness={0.4} roughness={0.4} />
+        </mesh>
+        {[0, 1, 2, 3].map((year) => (
+          <mesh key={year} position={[Math.cos(year * Math.PI / 2) * 0.075, Math.sin(year * Math.PI / 2) * 0.075, 0.02]} rotation={[0, 0, year * Math.PI / 2]}>
+            <boxGeometry args={[0.05, 0.01, 0.012]} />
+            <meshStandardMaterial color="#b488ff" metalness={0.55} roughness={0.28} />
+          </mesh>
+        ))}
+        <Html distanceFactor={8} center><span className="tiny-dial-text">LEAP</span></Html>
+      </group>
     </group>
   )
 }
@@ -704,10 +761,25 @@ function Plate({ color }) {
         <cylinderGeometry args={[0.98, 0.98, 0.055, 96]} />
         <meshStandardMaterial color={color} metalness={0.7} roughness={0.34} />
       </mesh>
+      {movementZones.map((zone) => (
+        <mesh key={zone.name} position={[zone.x, zone.y, 0.035]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[zone.radius, 0.006, 8, 80]} />
+          <meshStandardMaterial color={zone.color} metalness={0.55} roughness={0.35} transparent opacity={0.5} />
+        </mesh>
+      ))}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.98, 0.012, 10, 96]} />
         <meshStandardMaterial color="#d6c48e" metalness={0.82} roughness={0.18} />
       </mesh>
+      {Array.from({ length: 12 }, (_, screw) => {
+        const angle = screw * Math.PI * 2 / 12
+        return (
+          <mesh key={screw} position={[Math.cos(angle) * 0.82, Math.sin(angle) * 0.82, 0.045]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.018, 0.018, 0.018, 18]} />
+            <meshStandardMaterial color="#dce4ee" metalness={0.82} roughness={0.18} />
+          </mesh>
+        )
+      })}
     </group>
   )
 }
@@ -715,14 +787,18 @@ function Plate({ color }) {
 function Bridges({ color, active }) {
   return (
     <group>
-      <mesh position={[-0.18, 0.08, 0]} rotation={[0, 0, 0.15]}>
-        <boxGeometry args={[0.58, 0.16, 0.055]} />
-        <meshStandardMaterial color={color} metalness={0.78} roughness={0.22} emissive={active ? '#251d0d' : '#000000'} />
-      </mesh>
-      <mesh position={[0.25, -0.12, 0.03]} rotation={[0, 0, -0.45]}>
-        <boxGeometry args={[0.5, 0.13, 0.055]} />
-        <meshStandardMaterial color="#c4ad78" metalness={0.78} roughness={0.22} />
-      </mesh>
+      {[[-0.38, 0.34, 0.44, 0.14, 0.15], [0.1, 0.34, 0.52, 0.12, -0.08], [-0.24, -0.34, 0.56, 0.13, -0.1], [0.34, -0.32, 0.48, 0.12, 0.2]].map(([x, y, w, h, r], index) => (
+        <mesh key={index} position={[x, y, index * 0.018]} rotation={[0, 0, r]}>
+          <boxGeometry args={[w, h, 0.055]} />
+          <meshStandardMaterial color={index % 2 ? '#c4ad78' : color} metalness={0.78} roughness={0.22} emissive={active ? '#251d0d' : '#000000'} />
+        </mesh>
+      ))}
+      {[[-0.58, 0.38], [0.04, 0.34], [0.08, -0.34], [0.66, -0.38], [0.66, 0.32]].map(([x, y], index) => (
+        <mesh key={`jewel-${index}`} position={[x, y, 0.06]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.035, 0.035, 0.018, 24]} />
+          <meshStandardMaterial color="#b82745" metalness={0.5} roughness={0.18} emissive="#21020a" />
+        </mesh>
+      ))}
     </group>
   )
 }
@@ -733,6 +809,10 @@ function Case({ active }) {
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.1, 0.08, 16, 128]} />
         <meshStandardMaterial color="#d6b36d" metalness={0.92} roughness={0.18} emissive={active ? '#201607' : '#000000'} />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, -0.02]}>
+        <torusGeometry args={[1.0, 0.018, 10, 128]} />
+        <meshStandardMaterial color="#f1d99f" metalness={0.9} roughness={0.18} />
       </mesh>
       <mesh position={[-1.13, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.04, 0.04, 0.32, 24]} />
@@ -751,6 +831,10 @@ function Case({ active }) {
           </mesh>
         )
       })}
+      <mesh position={[0, -1.18, 0.02]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[0.32, 0.055, 0.08]} />
+        <meshStandardMaterial color="#d8dbe1" metalness={0.88} roughness={0.18} />
+      </mesh>
     </group>
   )
 }
@@ -780,6 +864,21 @@ function MechanismShape({ item, active, modeKey }) {
   return <Gear color={item.color} active={active} />
 }
 
+const labelPriority = new Set([
+  'Going barrels',
+  'Sonnerie barrels',
+  'Going train',
+  'Balance and escapement',
+  'Strike train',
+  'Governor',
+  'Hammers',
+  'Three gongs',
+  'Perpetual calendar works',
+  'Year display',
+  'Moon phase',
+  'Alarm works'
+])
+
 function Mechanism({ item, side, explode, selected, setSelected, modeKey, labels }) {
   const itemSideVisible = item.side === 'both' || item.side === side
   const active = isActive(item.name, modeKey, selected)
@@ -787,12 +886,15 @@ function Mechanism({ item, side, explode, selected, setSelected, modeKey, labels
   const layerOffset = side === 'front' ? item.layer * 0.035 : item.layer * -0.035
   const explodeOffset = explode * (0.08 + item.layer * 0.08)
   const displayPosition = base.clone().add(new THREE.Vector3(0, 0, side === 'front' ? layerOffset + explodeOffset : layerOffset - explodeOffset))
+  const radial = new THREE.Vector2(base.x, base.y).normalize()
+  const labelOffset = radial.length() ? [radial.x * 0.08, radial.y * 0.08 + 0.18, 0.18] : [0, 0.28, 0.18]
+  const showLabel = labels && item.type !== 'case' && (labelPriority.has(item.name) || active || selected === item.name || explode > 0.8)
   if (!itemSideVisible) return null
   return (
     <group position={displayPosition.toArray()} onClick={(event) => { event.stopPropagation(); setSelected(item.name) }}>
       <MechanismShape item={item} active={active} modeKey={modeKey} />
-      {labels && item.type !== 'case' && (
-        <Html distanceFactor={7.8} position={[0, 0.2 + item.layer * 0.01, 0.14]} center>
+      {showLabel && (
+        <Html distanceFactor={8.4} position={labelOffset} center>
           <button className={`part-label ${selected === item.name ? 'selected' : ''} ${active ? 'hot' : ''}`} onClick={() => setSelected(item.name)}>{item.name}</button>
         </Html>
       )}
@@ -801,11 +903,11 @@ function Mechanism({ item, side, explode, selected, setSelected, modeKey, labels
 }
 
 const flowPath = [
-  new THREE.Vector3(-0.64, -0.2, 0.55),
-  new THREE.Vector3(0.18, -0.32, 0.62),
-  new THREE.Vector3(0.72, -0.43, 0.7),
-  new THREE.Vector3(-0.12, -0.72, 0.76),
-  new THREE.Vector3(0, -0.96, 0.58)
+  new THREE.Vector3(-0.6, -0.34, 0.55),
+  new THREE.Vector3(0.08, -0.34, 0.62),
+  new THREE.Vector3(0.66, -0.38, 0.7),
+  new THREE.Vector3(0.36, -0.74, 0.76),
+  new THREE.Vector3(0.0, -0.96, 0.58)
 ]
 
 function pointOnPath(t) {
@@ -863,7 +965,7 @@ function WatchModel({ side, explode, selected, setSelected, modeKey, labels }) {
   })
   const flowActive = modeKey !== 'idle' && modeKey !== 'calendar'
   return (
-    <group ref={groupRef} rotation={[0.18, 0, -0.08]}>
+    <group ref={groupRef} rotation={[0.22, 0, -0.06]}>
       {mechanisms.map((item) => (
         <Mechanism key={item.name} item={item} side={side} explode={explode} selected={selected} setSelected={setSelected} modeKey={modeKey} labels={labels} />
       ))}
@@ -886,12 +988,13 @@ function Scene({ side, explode, selected, setSelected, modeKey, labels, resetTok
       <color attach="background" args={['#03060d']} />
       <fog attach="fog" args={['#03060d', 4, 9]} />
       <ambientLight intensity={0.45} />
-      <hemisphereLight color="#98ceff" groundColor="#0b111c" intensity={0.5} />
-      <directionalLight position={[3.8, 4.5, 3.6]} intensity={1.55} color="#ffe1b2" />
-      <directionalLight position={[-2.8, 1.5, -3.2]} intensity={0.55} color="#8dc2ff" />
-      <spotLight position={[0, 3.8, 1.2]} intensity={0.75} angle={0.4} penumbra={0.6} color="#8cf7ff" />
+      <hemisphereLight color="#a8d6ff" groundColor="#080d15" intensity={0.58} />
+      <directionalLight position={[3.8, 4.5, 3.6]} intensity={1.7} color="#ffe1b2" />
+      <directionalLight position={[-3.2, 1.8, -3.0]} intensity={0.72} color="#8dc2ff" />
+      <spotLight position={[0, 3.8, 1.2]} intensity={0.95} angle={0.4} penumbra={0.6} color="#8cf7ff" />
+      <spotLight position={[2.6, -2.5, 2.4]} intensity={0.55} angle={0.34} penumbra={0.8} color="#ffd28c" />
       <WatchModel side={side} explode={explode} selected={selected} setSelected={setSelected} modeKey={modeKey} labels={labels} />
-      <OrbitControls ref={orbitRef} enablePan={false} minDistance={2.2} maxDistance={6.5} />
+      <OrbitControls ref={orbitRef} enablePan={false} minDistance={2.35} maxDistance={6.5} />
     </>
   )
 }
@@ -997,7 +1100,7 @@ function App() {
             <span>{labels ? 'Labels on' : 'Labels off'}</span>
             <span>{mode.active.slice(0, 2).join(' • ') || 'Going train at rest'}</span>
           </div>
-          <Canvas camera={{ position: [2.5, 1.75, 3.9], fov: 38 }} onPointerMissed={() => setSelected('Reversible case')}>
+          <Canvas camera={{ position: [2.65, 1.65, 4.2], fov: 34 }} onPointerMissed={() => setSelected('Reversible case')}>
             <Scene side={side} explode={explode} selected={selected} setSelected={setSelected} modeKey={modeKey} labels={labels} resetToken={resetToken} />
           </Canvas>
         </section>
@@ -1026,6 +1129,7 @@ function App() {
               </div>
             ))}
           </div>
+          <p className="model-policy">{generatedModelMeta.purpose}; {generatedModelMeta.accuracy}.</p>
         </aside>
       </main>
 

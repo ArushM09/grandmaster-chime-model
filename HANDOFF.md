@@ -1,33 +1,51 @@
 # Handoff
 
 Current status:
-The app has been further polished for readability and educational clarity, with improved default camera framing, denser and better-spaced labels, stronger technical lighting, and mode-specific status styling so each chime mode reads as distinct even before animation cues.
+Improvement cycle 1 is complete, but commit creation is blocked by read-only Git metadata. The app source has been revised toward a stronger museum-style educational model with a cleaner mechanism layout, richer dials, more readable gears and bridges, reduced label clutter, a clearer chime energy path, and project-local validation scripts.
 
 Files changed:
-1. src/App.jsx
-2. src/styles.css
-3. HANDOFF.md
+1. package.json
+2. src/App.jsx
+3. src/styles.css
+4. src/generatedModel.js
+5. scripts/generate_blender_model.py
+6. scripts/lint_static.py
+7. scripts/visual_check.py
+8. VISUAL_REVIEW.md
+9. HANDOFF.md
 
 What works:
-1. Existing interactive model structure remains intact (flip, explode, labels, mode selection, explanations).
-2. Camera starts at a wider, more technical inspection angle for better layer readability.
-3. Lighting now uses mixed ambient/hemisphere/directional/spot setup for better depth contrast.
-4. Label anchor positions now scale by mechanism layer to reduce overlap.
-5. Viewer status pills now include active mechanism path hints and mode-dependent visual color treatments.
-6. Info panel now shows explicit energy route text for the current mode.
-7. Responsive layout behavior is preserved and tuned with updated styles.
+1. `python3 scripts/generate_blender_model.py` generates `src/generatedModel.js`.
+2. `python3 scripts/lint_static.py` passes.
+3. `python3 scripts/visual_check.py` passes as a source-level visual signal check.
+4. Mechanism groups are now separated into clearer front-side quadrants.
+5. Gears have spokes, scaled teeth, and guide rails for better readability.
+6. Bridges now read as functional support groups with jewel markers and plate zone outlines.
+7. Default labels are selective and less cluttered.
+8. Time and calendar dials have stronger visual hierarchy and more detailed indications.
+9. Chime energy flow follows sonnerie barrels, strike train, governor, hammers, and gongs.
 
 What is broken:
-1. Local dependency install is currently blocked by registry policy (`npm install` returns 403 for `@react-three/drei`).
-2. Because dependencies could not be installed, `npm run build` fails in this environment (`vite: not found`).
-3. `npm run dev` visual validation could not be executed due to missing dependencies.
+1. The local Node/npm runtime is unavailable. `node --version` returns `node: command not found`.
+2. `npm install`, `npm run generate:blender-model`, `npm run lint`, `npm run build`, and `npm run visual:check` all fail before running scripts with: `WSL 1 is not supported. Could not determine Node.js install directory`.
+3. Because Vite cannot run, live browser loading, screenshots, console checks, and responsive visual inspection could not be completed in this environment.
+4. Bridge shapes and calendar-side mechanics are still simplified and should be tuned from screenshots once the app can run.
+5. `git add`/`git commit` is blocked because `.git` is read-only in this environment: `fatal: Unable to create '/root/grandmaster-chime-model/.git/index.lock': Read-only file system`.
 
 Next exact task:
-Resolve package registry access for `@react-three/drei`, run full validation (`npm install`, `npm run build`, `npm run dev`), then visually tune mechanism animations and calendar-side detail with live browser feedback.
+Fix the local Node/npm environment, then run:
+1. `npm install`
+2. `npm run generate:blender-model`
+3. `npm run lint`
+4. `npm run build`
+5. `npm run visual:check`
+6. `npm run dev -- --host 127.0.0.1`
+
+After that, capture desktop and narrow screenshots, update `VISUAL_REVIEW.md` with live visual scores, and tune any remaining label overlap, exploded-layer spacing, and calendar-side mechanism detail.
 
 How to resume:
-1. Ensure npm registry access allows installing `@react-three/drei`.
-2. Run `npm install`.
-3. Run `npm run build`.
-4. Run `npm run dev` and open the app.
-5. Continue with visual/animation polishing in `src/App.jsx` and `src/styles.css`.
+1. Open `/root/grandmaster-chime-model`.
+2. Confirm Node is installed with `node --version`.
+3. Run the npm workflow above.
+4. Inspect the running app visually, especially front assembled view, calendar side, and exploded view.
+5. Continue edits in `src/App.jsx` and `src/styles.css`, then rerun validation and update `VISUAL_REVIEW.md` and this file.

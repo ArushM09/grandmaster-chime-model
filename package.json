@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "generate:blender-model": "python3 scripts/generate_blender_model.py",
+    "lint": "python3 scripts/lint_static.py",
+    "visual:check": "python3 scripts/visual_check.py",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
